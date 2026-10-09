@@ -25,6 +25,10 @@ def arguments():
                    help="Distancia perceptual máxima para excluir casi duplicados; -1 desactiva, 0=hash igual")
     p.add_argument("--crop", choices=["center", "pad"], default="center",
                    help="center recorta a cuadrado; pad conserva la imagen completa")
+    p.add_argument("--include-folders", nargs="+", default=None,
+                   help="Nombres exactos de carpetas a incluir; busca también dentro de subcarpetas")
+    p.add_argument("--exclude-name", nargs="*", default=[],
+                   help="Subcadenas de nombre de archivo a excluir, sin distinguir mayúsculas")
     return p.parse_args()
 
 
@@ -46,7 +50,15 @@ def main():
         except ImportError as exc:
             raise SystemExit("Instale imagehash: pip install imagehash") from exc
 
-    files = sorted((p for p in source.rglob("*") if p.is_file() and p.suffix.lower() in EXTS),
+    selected = set(a.include_folders or [])
+    available = {p.name for p in source.rglob("*") if p.is_dir() and p.name in selected}
+    missing = selected - available
+    if missing:
+        raise FileNotFoundError(f"No se encontraron las carpetas: {sorted(missing)}")
+    excluded_names = tuple(part.casefold() for part in a.exclude_name)
+    files = sorted((p for p in source.rglob("*") if p.is_file() and p.suffix.lower() in EXTS
+                    and (not selected or any(parent.name in selected for parent in p.parents if parent != source))
+                    and not any(part in p.name.casefold() for part in excluded_names)),
                    key=lambda p: str(p.relative_to(source)).lower())
     dest.mkdir(parents=True, exist_ok=True)
     images_dir = dest / "images"
@@ -107,6 +119,7 @@ def main():
     report = {"input": str(source), "total_candidates": len(files), "counts": reasons,
               "output_size": a.size, "crop": a.crop, "min_side": a.min_side,
               "phash_distance": a.phash_distance,
+              "include_folders": sorted(selected), "exclude_name": list(a.exclude_name),
               "note": "No detecta automáticamente escenas sin personajes ni resuelve permisos de uso. Revisar visualmente."}
     (dest / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
