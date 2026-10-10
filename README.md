@@ -33,3 +33,10 @@ game_character_skins/
 
 
 En el presente repositorio se ha hecho uso solamente del conjunto arknights/ y azurlane/
+
+# Semilla
+Se ha usado SEED=2026
+
+# DECLARACIÓN DEL USO DE ASISTENTES DE IA
+
+Se declara por este medio que se ha hecho uso de IA en el presente trabajo. Su uso se limitó al mejoramiento del código preexistente, ya sea para hacerlo más eficiente en el proceso de cómputo, ya para el mejoramiento de la estructura o la solución de errores cuya solución no era trivial.
