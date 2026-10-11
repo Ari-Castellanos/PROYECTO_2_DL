@@ -1,0 +1,20 @@
+{
+  "input": "C:\\Users\\aripi\\Documents\\DeepLearning\\PROYECTO_2\\datos_huggingface",
+  "total_candidates": 1192,
+  "counts": {
+    "kept": 1191,
+    "exact_duplicate": 1
+  },
+  "output_size": 64,
+  "crop": "pad",
+  "min_side": 64,
+  "phash_distance": -1,
+  "include_folders": [
+    "arknights",
+    "azurlane"
+  ],
+  "exclude_name": [
+    "chibi"
+  ],
+  "note": "No detecta automáticamente escenas sin personajes ni resuelve permisos de uso. Revisar visualmente."
+}
